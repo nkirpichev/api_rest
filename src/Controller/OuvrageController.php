@@ -7,6 +7,7 @@ use App\Repository\OuvrageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -63,6 +64,16 @@ class OuvrageController extends AbstractController
         $em->remove($ouvrage);
         $em->flush();
         return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('api/ouvrages/', name: 'app_api_ouvrage_create', methods:['POST'])]
+    public function apiOuvrageCreate(Request $request, EntityManagerInterface $em, SerializerInterface $serializer) : Response
+    {
+
+        $ouvrage = $serializer->deserialize($request->getContent(), Ouvrage::class,'json', ['groups' => ['ouvrage']]);
+        $em->persist( $ouvrage);
+        $em->flush();
+        return new Response('', Response::HTTP_CREATED);
     }
 
 }
